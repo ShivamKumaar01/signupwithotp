@@ -1,46 +1,45 @@
-const{User}=require('../models')
 
+const { User } = require('../models');
 
-exports.fileupload=async(req,res)=>{
+exports.fileupload = async (req, res) => {
+    const email = req.body.email;
+    const file = req.file; 
 
-    const file=req.body.file;
-    const email=req.body.email;
-    if(!file||!email){
+    console.log("Uploaded file =>", file);
+    console.log("Email =>", email);
+
+    if (!file || !email) {
         return res.status(401).send({
-            success:false,
-            message:"user credential not found"
-        })
+            success: false,
+            message: "file or email missing"
+        });
     }
-   let response=await User.findOneAndUpdate({
-    "email":email
-   },{
-    $set: {
-        "image": req.body.file
+
+    try {
+        const user = await User.findOne({ where: { email } });
+
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: "user not found"
+            });
+        }
+
+        user.image = file.filename; 
+        await user.save();
+
+        return res.status(200).send({
+            success: true,
+            message: "Image uploaded successfully",
+            user
+        });
+
+    } catch (err) {
+        console.error("Error uploading file:", err);
+        console.log(err.message,"ye error hai")
+        return res.status(500).send({
+            success: false,
+            message: "internal server error"
+        });
     }
-    
-   },
-   { new: true }, (err, doc) => {
-    if (!err) { 
-
-        // console.log(req.user.name);
-        console.log(req.body.name);
-      
-    }
-    else {
-        console.log('Error during record update : ' + err);
-    }
- })
-
-
-
-
-//    if(!response){
-//     return res.status(404).send({
-//         success:false,
-//         message:"user not found",
-
-//     })
-//    }
-//    response.image=file;
-
 }

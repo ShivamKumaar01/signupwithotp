@@ -1,5 +1,6 @@
 const { User } = require('../models')
-const bcrypt = require("bcrypt");
+const{sendMailerFunction}=require('../lib/mailer')
+const bcrypt = require("bcryptjs");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 
@@ -31,11 +32,17 @@ exports.create = async (req, res) => {
     }
     let verificationCode = Math.floor(10000 + Math.random() * 90000).toString()
     const response = await User.create({ name, email, password: hash, verificationCode: verificationCode });
+   
     if (!response) {
         return res.status(500).send({
             success: false,
             message: "internal server error"
         })
+    }
+    if(response){
+        console.log("yaha tak to sahi hai bhai");
+        await sendMailerFunction(req, res);
+        // console.log("code yaha fat raha hai ")
     }
     return response;
 
