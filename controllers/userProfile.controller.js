@@ -1,13 +1,15 @@
 const{userProfileService}=require('../service')
 exports.insertImage = async (req, res) => {
-  console.log(req.body.email,req.file,"kuch aaya hai ya nahi");
+  console.log("ye request hai",req)
+  console.log(req.body.email,"kuch aaya hai ya nahi");
   try {
       const user = await userProfileService.fileupload(
        
         req.body.email,
-         req.file,
+        req.file,
           
       );
+      console.log(user)
     
       
 

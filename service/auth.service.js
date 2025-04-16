@@ -59,6 +59,7 @@ exports.login = async (req, res) => {
         });
     }
     let loginUser = await User.findOne({ where: { email: email } });
+    console.log(loginUser,"sdjfhh");
     if (!loginUser) {
         return res.status(404).send({
             success: false,
@@ -71,7 +72,7 @@ exports.login = async (req, res) => {
             message: "user credential not found || password galat hai bhai",
         });
     }
-    const token = jwt.sign({ id: loginUser._id }, 'Zenmonk', {
+    const token = jwt.sign({ id: loginUser.id }, 'Zenmonk', {
         expiresIn: '4h'
     })
     if (!token) {
